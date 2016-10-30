@@ -44,12 +44,40 @@ public class FDChecker {
 		//original table.
 		//a decomposition is lossless if the common attributes for a superkey for one of the
 		//tables.
-		return false;
+		
+		AttributeSet intersection = new AttributeSet(t1); // find intersection of t1 and t2
+		intersection.retainAll(t2);
+		
+		AttributeSet intersection_closure = closure(intersection, fds); // find the closure of f
+		
+		if(intersection_closure.containsAll(t1)){ // returns true if closure contains t1 or t2
+			return true;
+		}else if(intersection_closure.containsAll(t2)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	//recommended helper method
 	//finds the total set of attributes implied by attrs
 	private static AttributeSet closure(AttributeSet attrs, Set<FunctionalDependency> fds) {
-		return null;
+		AttributeSet closure = attrs;
+		int size = -1;
+		Iterator<FunctionalDependency> iterator;
+		
+		while(size != closure.size()){  // repeat while loop until finished going through all attrs: no further change
+			iterator = fds.iterator();  // iterate over total FDs
+			size = closure.size();		// update size
+			
+			while(iterator.hasNext()){
+				FunctionalDependency current = iterator.next();
+				if(closure.containsAll(current.left)){	//if there is a match between attrs and the given FDs
+					closure.add(current.right); // add RHS value to closure
+				}
+			}		
+		}
+		
+		return closure;
 	}
 }
